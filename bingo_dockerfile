@@ -1,0 +1,22 @@
+#Use an official Python runtime as a parent image
+
+FROM python:3.10.12
+
+#Set the working directory in the container
+
+WORKDIR /app
+RUN apt update  -y && apt install libpq-dev -y && pip install psycopg2-binary
+COPY r.txt /app
+
+#Install Django globally within the Python image
+
+RUN pip install -r r.txt
+
+#Copy your application code into the container
+
+COPY . /app
+RUN celery -A configurations worker &
+RUN celery -A configurations beat &
+#Define the command to run your Django application
+
+CMD ["python", "manage.py", "runserver", "0.0.0.0:8000"]
