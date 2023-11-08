@@ -1,0 +1,40 @@
+pipeline{
+    agent any 
+
+stages{
+    stage('git clone'){
+        steps{
+        git branch: 'master', url: 'https://github.com/ak5475043/ContactsAppLaravel.git'
+        }
+    }
+
+
+    stage('docker build'){
+        steps{
+            sh 'docker build -t ayush2107/contact_laravel:1.0 .'
+           }
+    }
+    stage('docker push'){
+        steps{
+            sh 'docker login -u ayush2107 -p <>'
+            sh 'docker push ayush2107/contact_laravel:1.0'
+        }
+    }
+    stage ('Copy demo.yaml') {
+        steps {
+            sshagent(['my-ssh-user']) {
+                sh 'scp demo.yaml ubuntu@172.31.80.5:/home/ubuntu/'
+            }
+        }
+    }
+    stage ('k8s cluster run') {
+        steps {
+            sshagent(['my-ssh-user']) {
+                sh 'ssh -o StrictHostKeyChecking=no ubuntu@172.31.80.5 "kubectl apply -f /home/ubuntu/demo.yaml"'
+            }
+        }
+    }
+    
+}
+
+}
