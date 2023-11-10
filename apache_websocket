@@ -1,0 +1,74 @@
+<VirtualHost *:80>
+    ServerName mattermost-testing.staging.chicmic.co.in
+    ProxyPass / http://192.180.2.127:8065/
+    ProxyPassReverse / http://192.180.2.127:8065/
+    ProxyPreserveHost On
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} =websocket [NC]
+    RewriteRule /api/v4/websocket/ ws://192.180.2.127:8065/api/v4/websocket/ [P,L]
+</VirtualHost>
+
+
+
+
+<VirtualHost *:80>
+    ServerName mattermost-testing.staging.chicmic.co.in
+
+
+    ErrorLog ${APACHE_LOG_DIR}/error.log
+    CustomLog ${APACHE_LOG_DIR}/access.log combined
+
+    ProxyPreserveHost On
+    ProxyPass / http://192.180.2.127:8065/
+    ProxyPassReverse / http://192.180.2.127:8065/
+
+
+
+    RewriteEngine On
+    RewriteCond %{HTTP:UPGRADE} ^websocket$ [NC]
+    RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+    RewriteRule . ws://192.180.2.127:8065%{REQUEST_URI} [P]
+</VirtualHost>
+
+
+
+
+
+</VirtualHost:*80>
+    ServerName api.bingo.staging.chicmic.co.in
+
+    # Configure the proxy for HTTP requests
+    ProxyPass / http://127.0.0.1:8000/
+    ProxyPassReverse / http://127.0.0.1:8000/
+
+       
+    # Enable WebSocket support
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} ^websocket [NC]
+    RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+    RewriteRule . ws://127.0.0.1:8000%{REQUEST_URI} [P]
+    ErrorLog ${APACHE_LOG_DIR}/api.bingo.staging.chicmic.co.in_error.log
+    CustomLog ${APACHE_LOG_DIR}/api.bingo.staging.chicmic.co.in_access.log combined
+
+RewriteCond %{SERVER_NAME} =api.bingo.staging.chicmic.co.in
+RewriteRule ^ https://%{SERVER_NAME}%{REQUEST_URI} [END,NE,R=permanent]
+</VirtualHost>
+
+
+
+
+
+ServerName api.bingo.staging.chicmic.co.in
+
+    # Configure the proxy for HTTP requests
+    ProxyPass / http://127.0.0.1:8000/
+    ProxyPassReverse / http://127.0.0.1:8000/
+
+       
+    # Enable WebSocket support
+    RewriteEngine on
+    RewriteCond %{HTTP:Upgrade} ^websocket [NC]
+    RewriteCond %{HTTP:CONNECTION} ^Upgrade$ [NC]
+    RewriteRule . ws://127.0.0.1:8000%{REQUEST_URI} [P]
+    ErrorLog ${APACHE_LOG_DIR}/api.bingo.staging.chicmic.co.in_error.log
+    CustomLog ${APACHE_LOG_DIR}/api.bingo.staging.chicmic.co.in_access.log combined
